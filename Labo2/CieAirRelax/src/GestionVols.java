@@ -1,5 +1,6 @@
 import java.io.*;
 import javax.swing.*;
+import java.util.Arrays;
 
 public class GestionVols {
 
@@ -24,13 +25,56 @@ public class GestionVols {
 
     }
 
-    public static void insererVol(int numeroVol, String destination, Date date, int nbReservations) {
-        if (Vol.nombreVols < MAX_VOLS) {
-            
+    public static void insererVol() {
+        if (Vol.nombreVols >= MAX_VOLS) {
+            String message = "Le nombre maximal de vols a été atteint!";
+            JOptionPane.showMessageDialog(null, message, "ERREUR", JOptionPane.PLAIN_MESSAGE);
         }
         else {
-            // Erreur nombre maximal de vols atteint.
+            String numeroVol = JOptionPane.showInputDialog(null, "Numéro du vol :", "AJOUT D'UN VOL", JOptionPane.PLAIN_MESSAGE);
+            if (rechercherVol(Integer.parseInt(numeroVol)) != -1) {
+                String message = "Ce numéro de vol existe déjà!";
+                JOptionPane.showMessageDialog(null, message, "ERREUR", JOptionPane.PLAIN_MESSAGE);
+            }
+            else {
+                tabVols[Vol.nombreVols + 1] = new Vol(numeroVol, destination, new Date(jour, mois, an), nbReservations);
+            }
         }
+    }
+
+    public static void retirerVol() {
+        String numeroVol = JOptionPane.showInputDialog(null, "Numéro du vol :", "RETRAIT D'UN VOL", JOptionPane.PLAIN_MESSAGE);
+        int position = rechercherVol(Integer.parseInt(numeroVol));
+        if (position == -1) {
+            String message = "Ce numéro de vol n'existe pas!";
+            JOptionPane.showMessageDialog(null, message, "ERREUR", JOptionPane.PLAIN_MESSAGE);
+        }
+        else {
+            JTextArea message = new JTextArea();
+            message.append("Numéro de vol : " + numeroVol + "\n");
+
+            if JOptionPane.showInputDialog
+            /*
+
+            // enlever l'element 
+
+            tabVols[position] = 0; 
+
+             */
+            
+            Vol.nombreVols--;
+        }
+    }
+
+    public static int rechercherVol(int numeroVol) {
+        int resultat = -1;
+        for (int i = 0; i < Vol.nombreVols; i++) {
+            if (tabVols[i].getNumeroVol() == numeroVol) {
+                resultat = i;
+                break;
+            }
+        }
+        return resultat;
     }
 
     public static void main(String[] args) throws Exception {
