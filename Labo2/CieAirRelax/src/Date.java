@@ -5,7 +5,8 @@ public class Date {
     private int an;
 
     Date() {
-
+        jour = mois = 1;
+        an = 2000;
     }
 
     Date(int jour, int mois, int an) {
