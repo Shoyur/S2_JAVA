@@ -11,6 +11,8 @@ public class GestionVols {
     final static int MAX_VOLS = 20;
     static final String FICHIER_VOLS = "src/donnees/Cie_Air_Relax.txt";
     static final String NOM_DE_CIE = "CIE AIR RELAX";
+    static final String SEPARATEUR = " ";
+
     static ArrayList<Vol> tabVols; 
     static BufferedReader tempVols;
 
@@ -21,7 +23,7 @@ public class GestionVols {
         tempVols = new BufferedReader(new FileReader(FICHIER_VOLS));
         ligne = tempVols.readLine();
         while (i < MAX_VOLS && ligne != null) {
-            elems = ligne.split(" ");
+            elems = ligne.split(SEPARATEUR);
             // Vol(int numeroVol, String destination, Date date, int nbReservations)
             tabVols.add(new Vol(Integer.parseInt(elems[0]), elems[1], new Date(Integer.parseInt(elems[2]), Integer.parseInt(elems[3]), Integer.parseInt(elems[4])), Integer.parseInt(elems[5])));
             ligne = tempVols.readLine();
@@ -57,12 +59,22 @@ public class GestionVols {
         }
         else {
             String numeroVol = JOptionPane.showInputDialog(null, "Numéro du vol :", "AJOUT D'UN VOL", JOptionPane.PLAIN_MESSAGE);
+            if (numeroVol == null) { return; }
             if (rechercherVol(Integer.parseInt(numeroVol)) != -1) {
                 String message = "Ce numéro de vol existe déjà!";
                 JOptionPane.showMessageDialog(null, message, "ERREUR", JOptionPane.PLAIN_MESSAGE);
             }
             else {
-                tabVols.add(new Vol(numeroVol, destination, new Date(jour, mois, an), nbReservations));
+                String destination = JOptionPane.showInputDialog(null, "Destination :", "AJOUT D'UN VOL", JOptionPane.PLAIN_MESSAGE);
+                if (destination == null) { return; }
+                String jour = JOptionPane.showInputDialog(null, "Jour :", "AJOUT D'UN VOL", JOptionPane.PLAIN_MESSAGE);
+                if (jour == null) { return; }
+                String mois = JOptionPane.showInputDialog(null, "Mois :", "AJOUT D'UN VOL", JOptionPane.PLAIN_MESSAGE);
+                if (mois == null) { return; }
+                String an = JOptionPane.showInputDialog(null, "Année :", "AJOUT D'UN VOL", JOptionPane.PLAIN_MESSAGE);
+                if (an == null) { return; }
+                int nbReservations = 0;
+                tabVols.add(new Vol(Integer.parseInt(numeroVol), destination, new Date(Integer.parseInt(jour), Integer.parseInt(mois), Integer.parseInt(an)), nbReservations));
             }
         }
     }
