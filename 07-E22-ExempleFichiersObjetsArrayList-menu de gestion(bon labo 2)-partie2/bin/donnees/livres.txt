@@ -1,0 +1,5 @@
+100;Titanic ;500
+200;La cuisine de ma m�re;850
+300;Pinoccio;100
+400;Langage Java;600
+500;HTML 5 pour les nulls;100

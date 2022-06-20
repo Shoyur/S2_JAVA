@@ -15,6 +15,8 @@ public class Vol {
         nombreVols++;
     }
 
+    Vol() {}
+
     // Les getters
     public int getNumeroVol() {
         return this.numeroVol;
