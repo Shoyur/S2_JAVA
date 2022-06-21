@@ -25,6 +25,16 @@ public class Date {
         return this.an;
     }
 
+    public void setJour(int jour) {
+        this.jour = jour;
+    }
+    public void setMois(int mois) {
+        this. mois = mois;
+    }
+    public void setAn(int an) {
+        this.an = an;
+    }
+
     public String toString() {
         return this.jour + "/" + this.mois + "/" + this.an;
     }

@@ -1,22 +1,18 @@
 import java.io.*;
 import javax.swing.*;
 import java.awt.*;
-
 import java.util.ArrayList;
-import java.util.List;
-//import java.util.Arrays;
-import java.util.stream.IntStream;
-
+import java.time.*;
 
 public class GestionVols {
-
+    
     final static int MAX_PLACES = 340;
     final static int MAX_VOLS = 20;
-    static final String FICHIER_VOLS = "src/donnees/Cie_Air_Relax.txt";
-    static final String NOM_DE_CIE = "Cie Air Relax";
-    static final String SEPARATEUR = "[;/]";
+    final static String FICHIER_VOLS = "src/donnees/Cie_Air_Relax.txt";
+    final static String NOM_DE_CIE = "Cie Air Relax";
+    final static String SEPARATEUR = "[;/]";
+    final static String[] LES_MOIS = {"Janvier", "Février", "Mars", "Avril",  "Mai",  "Juin",  "Juillet",  "Août",  "Septembre",  "Octobre",  "Novembre",  "Décembre"};
 
-    //static ArrayList<Vol> tabVols; 
     static ArrayList<Vol> tabVols = new ArrayList<Vol>();
     static BufferedReader tempVols;
 
@@ -30,7 +26,6 @@ public class GestionVols {
             ligne = tempVols.readLine();
             while (ligne != null) {
                 elems = ligne.split(SEPARATEUR);
-                // Vol(int numeroVol, String destination, Date date, int nbReservations)
                 tabVols.add(new Vol(Integer.parseInt(elems[0]), elems[1], new Date(Integer.parseInt(elems[2]), Integer.parseInt(elems[3]), Integer.parseInt(elems[4])), Integer.parseInt(elems[5])));
                 ligne = tempVols.readLine();
             }
@@ -59,7 +54,7 @@ public class GestionVols {
         for (Vol vol : tabVols) {
             message.append(vol.getNumeroVol() + "\t\t" + vol.getDestination() + "\t" + vol.getDate() + "\t" + vol.getNbReservations() + "\n");
         }
-        message.append("\n");
+        message.append("\n\n Nombre total de vols = " + tabVols.size() + ".\n\n");
         JOptionPane.showMessageDialog(null, message, NOM_DE_CIE, JOptionPane.PLAIN_MESSAGE);
     }
 
@@ -76,14 +71,59 @@ public class GestionVols {
                 JOptionPane.showMessageDialog(null, message, "ERREUR", JOptionPane.PLAIN_MESSAGE);
             }
             else {
-                String destination = JOptionPane.showInputDialog(null, "Destination :", "AJOUT D'UN VOL", JOptionPane.PLAIN_MESSAGE);
+                JFrame frame = new JFrame();
+                LocalDate maintenant = LocalDate.now();
+                String titre = "AJOUT D'UN VOL";
+
+                // Demander destination.
+                String destination = JOptionPane.showInputDialog(null, "Destination :", titre, JOptionPane.PLAIN_MESSAGE);
                 if (destination == null) { return; }
-                String jour = JOptionPane.showInputDialog(null, "Jour :", "AJOUT D'UN VOL", JOptionPane.PLAIN_MESSAGE);
-                if (jour == null) { return; }
-                String mois = JOptionPane.showInputDialog(null, "Mois :", "AJOUT D'UN VOL", JOptionPane.PLAIN_MESSAGE);
-                if (mois == null) { return; }
-                String an = JOptionPane.showInputDialog(null, "Année :", "AJOUT D'UN VOL", JOptionPane.PLAIN_MESSAGE);
-                if (an == null) { return; }
+                else { destination = String.format("%-21s", destination); }
+
+                // Demander l'année.
+                String [] options_an = new String [10];
+                int opt_defaut = 0;
+                for (int i = 0; i < 10; i++) { options_an[i] = String.valueOf(maintenant.getYear() + i); }
+                String message2 = "Choisissez la nouvelle année : \n\n";
+                String an = (String)JOptionPane.showInputDialog(frame, message2, titre, JOptionPane.PLAIN_MESSAGE, null, options_an, options_an[opt_defaut]);
+                if (an == null || Integer.parseInt(an) == -1) { return; }
+
+                // Demander le mois.
+                int nbDeMois = 12;
+                int premierMois = 1;
+                if (Integer.parseInt(an) == maintenant.getYear()) { 
+                    premierMois = maintenant.getMonthValue();
+                    nbDeMois -= (premierMois - 1);
+                }
+                String [] options_mois = new String [nbDeMois];
+                opt_defaut = 0;
+                for (int i = 0; i < nbDeMois; i++) {
+                    options_mois[i] = String.valueOf(premierMois + i);
+                    // if (tabVols.get(position).getDate().getMois() == (premierMois + i)) { opt_defaut = i-1; }
+                }
+                message2 = "Choisissez le nouveau mois : \n\n" + "Nouvelle année = " + an + "\n\n";
+                String mois = (String)JOptionPane.showInputDialog(frame, message2, titre, JOptionPane.PLAIN_MESSAGE, null, options_mois, options_mois[opt_defaut]);
+                if (mois == null || Integer.parseInt(mois) == -1) { return; }
+
+                // Demander le jour.
+                int nbDeJour = nbJourParMois(Integer.parseInt(an), Integer.parseInt(mois));
+                int premierJour = 1;
+                if ((Integer.parseInt(an) == maintenant.getYear()) && (Integer.parseInt(mois) == maintenant.getMonthValue())) { 
+                    premierJour = maintenant.getDayOfMonth();
+                    nbDeJour -= (premierJour - 1);
+                }
+                String [] options_jour = new String [nbDeJour];
+                opt_defaut = 0;
+                for (int i = 0; i < nbDeJour; i++) {
+                    options_jour[i] = String.valueOf(premierJour + i);
+                    // if (tabVols.get(position).getDate().getJour() == i) { opt_defaut = i-1; }
+                }
+                message2 = "Choisissez le nouveau jour : \n\n" + "Nouvelle année = " + an + "\n";
+                message2 += "Nouveau mois = " + mois + " (" + LES_MOIS[Integer.parseInt(mois) - 1] + ")\n\n";
+                String jour = (String)JOptionPane.showInputDialog(frame, message2, titre, JOptionPane.PLAIN_MESSAGE, null, options_jour, options_jour[opt_defaut]);
+                if (jour == null || Integer.parseInt(jour) == -1) { return; }
+
+
                 tabVols.add(new Vol(Integer.parseInt(numeroVol), destination, new Date(Integer.parseInt(jour), Integer.parseInt(mois), Integer.parseInt(an)), 0));
             }
         }
@@ -114,14 +154,95 @@ public class GestionVols {
             }
         }
     }
+		
+	public static int nbJourParMois(int an, int mois) {
+        boolean estBissextile = ((an % 4) == 0 && (an % 100) != 0) || (an % 400 == 0);
+		int tabJourParMois[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+		if (mois == 2 && estBissextile) { return 29; }
+		else { return tabJourParMois[mois]; }
+	}
 
     public static void modifierDate() {
+        JFrame frame = new JFrame();
+        LocalDate maintenant = LocalDate.now();
+
+        String titre = "MODIFICATION DE LA DATE DE DÉPART";
+        String message = "Choisissez le numéro du vol :";
+        String [] options_vol = new String [tabVols.size()];
+        int opt_defaut = 0;
+        for (int i = 0; i < tabVols.size(); i++) {
+            options_vol[i] = String.valueOf(tabVols.get(i).getNumeroVol());
+            // if (tabVols.get(position).getDate().getMois() == (premierMois + i)) { opt_defaut = i-1; }
+        }
+        String numeroVol = (String)JOptionPane.showInputDialog(frame, message, titre, JOptionPane.PLAIN_MESSAGE, null, options_vol, options_vol[opt_defaut]);
+
+        
+        if (numeroVol == null || Integer.parseInt(numeroVol) == -1) { return; }
+        int position = rechercherVol(Integer.parseInt(numeroVol));
+        message = "No. de vol : " + numeroVol + "\n";
+        message += "Destination : " + tabVols.get(position).getDestination() + "\n";
+        message += "Date de départ : " + tabVols.get(position).getDate() + "\n\n";
+
+
+        // Demander l'année.
+        String [] options_an = new String [10];
+        opt_defaut = 0;
+        for (int i = 0; i < 10; i++) {
+            options_an[i] = String.valueOf(maintenant.getYear() + i);
+            if (tabVols.get(position).getDate().getAn() == (maintenant.getYear() + i)) { opt_defaut = i; }
+        }
+        String message2 = "Choisissez la nouvelle année : \n\n";
+        String an = (String)JOptionPane.showInputDialog(frame, message + message2, titre, JOptionPane.PLAIN_MESSAGE, null, options_an, options_an[opt_defaut]);
+        if (an == null || Integer.parseInt(an) == -1) { return; }
+
+
+        // Demander le mois.
+        int nbDeMois = 12;
+        int premierMois = 1;
+        if (Integer.parseInt(an) == maintenant.getYear()) { 
+            premierMois = maintenant.getMonthValue();
+            nbDeMois -= (premierMois - 1);
+        }
+        String [] options_mois = new String [nbDeMois];
+        opt_defaut = 0;
+        for (int i = 0; i < nbDeMois; i++) {
+            options_mois[i] = String.valueOf(premierMois + i);
+            // if (tabVols.get(position).getDate().getMois() == (premierMois + i)) { opt_defaut = i-1; }
+        }
+        message2 = "Choisissez le nouveau mois : \n\n" + "Nouvelle année = " + an + "\n\n";
+        String mois = (String)JOptionPane.showInputDialog(frame, message + message2, titre, JOptionPane.PLAIN_MESSAGE, null, options_mois, options_mois[opt_defaut]);
+        if (mois == null || Integer.parseInt(mois) == -1) { return; }
+
+
+        // Demander le jour.
+
+        int nbDeJour = nbJourParMois(Integer.parseInt(an), Integer.parseInt(mois));
+        int premierJour = 1;
+        if ((Integer.parseInt(an) == maintenant.getYear()) && (Integer.parseInt(mois) == maintenant.getMonthValue())) { 
+            premierJour = maintenant.getDayOfMonth();
+            nbDeJour -= (premierJour - 1);
+        }
+        String [] options_jour = new String [nbDeJour];
+        opt_defaut = 0;
+        for (int i = 0; i < nbDeJour; i++) {
+            options_jour[i] = String.valueOf(premierJour + i);
+            // if (tabVols.get(position).getDate().getJour() == i) { opt_defaut = i-1; }
+        }
+        message2 = "Choisissez le nouveau jour : \n\n" + "Nouvelle année = " + an + "\n";
+        message2 += "Nouveau mois = " + mois + " (" + LES_MOIS[Integer.parseInt(mois) - 1] + ")\n\n";
+        String jour = (String)JOptionPane.showInputDialog(frame, message + message2, titre, JOptionPane.PLAIN_MESSAGE, null, options_jour, options_jour[opt_defaut]);
+        if (jour == null || Integer.parseInt(jour) == -1) { return; }
+
+        tabVols.get(position).getDate().setAn(Integer.parseInt(an)); 
+        tabVols.get(position).getDate().setJour(Integer.parseInt(jour)); 
+        tabVols.get(position).getDate().setJour(Integer.parseInt(jour)); 
 
     }
 
     public static void reserverVol() {
         String message = "Numéro du vol :";
         String numeroVol = JOptionPane.showInputDialog(null, message, "RÉSERVATION D'UN VOL", JOptionPane.PLAIN_MESSAGE);
+        if (numeroVol == null) { return; }
         int position = rechercherVol(Integer.parseInt(numeroVol));
         if (position == -1) {
             message = "Ce numéro de vol n'existe pas!";
@@ -145,6 +266,7 @@ public class GestionVols {
                     options[i-1] = String.valueOf(i);
                 }
                 String combien = (String)JOptionPane.showInputDialog(frame, message, "RÉSERVATION D'UN VOL", JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+                if (Integer.parseInt(combien) == -1) { return; }
                 tabVols.get(position).setNbReservations(tabVols.get(position).getNbReservations() + Integer.parseInt(combien));
 
             }
@@ -166,27 +288,22 @@ public class GestionVols {
         tempVols.close();
     }
 
-    public static void terminer() throws Exception{
-        boucleMain = false;
-        ecrireFichier();
-        JOptionPane.showMessageDialog(null, "\nLe fichier a été mis à jour.\n\nAu revoir!\n\n", "FIN", JOptionPane.PLAIN_MESSAGE);
-    }
-
     public static void main(String[] args) throws Exception {
         chargerVols();
         JTextArea messageMenuPrincipal = new JTextArea();
         messageMenuPrincipal.append("\n\tGESTION DES VOLS\n\n");
-        messageMenuPrincipal.append("(1) Liste des vols.\n");
-        messageMenuPrincipal.append("(2) Ajouter un vol.\n");
-        messageMenuPrincipal.append("(3) Retirer un vol.\n");
-        messageMenuPrincipal.append("(4) Modifier une date de départ.\n");
-        messageMenuPrincipal.append("(5) Réservation d'un vol.\n");
-        messageMenuPrincipal.append("(0) Quitter ce programme.\n");
+        messageMenuPrincipal.append("  (1) Liste des vols.\n");
+        messageMenuPrincipal.append("  (2) Ajouter un vol.\n");
+        messageMenuPrincipal.append("  (3) Retirer un vol.\n");
+        messageMenuPrincipal.append("  (4) Modifier une date de départ.\n");
+        messageMenuPrincipal.append("  (5) Réservation d'un vol.\n");
+        messageMenuPrincipal.append("  (0) Sauvegarder + Quitter ce programme.                 \n");
         messageMenuPrincipal.append("\n\tFaites votre choix :");
-        while (boucleMain) {
+        while (boucleMain == true) {
             String choix = JOptionPane.showInputDialog(null, messageMenuPrincipal, NOM_DE_CIE, JOptionPane.PLAIN_MESSAGE);
             if (choix == null) {
-                terminer();
+                JOptionPane.showMessageDialog(null, "\nAu revoir!\n\n", "FIN", JOptionPane.PLAIN_MESSAGE);
+                boucleMain = false;
             }
             else {
                 switch (choix) {
@@ -215,7 +332,9 @@ public class GestionVols {
                         break;
                     }
                     case "0": {
-                        terminer();
+                        ecrireFichier();
+                        JOptionPane.showMessageDialog(null, "\nLe fichier a été mis à jour.\n\nAu revoir!\n\n", "FIN", JOptionPane.PLAIN_MESSAGE);
+                        boucleMain = false;
                     }
                 }
             }

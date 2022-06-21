@@ -12,7 +12,7 @@ public class Vol {
         this.destination = destination;
         this.date = date;
         this.nbReservations = nbReservations;
-        nombreVols++;
+        nombreVols++; // Mais n'est pas utilisé car nous utilisons plutôt tabVols.size()
     }
 
     Vol() {}
