@@ -130,6 +130,9 @@ public class GestionVols {
     }
 
     public static void retirerVol() throws Exception {
+        JFrame frame = new JFrame();
+        
+
         String numeroVol = JOptionPane.showInputDialog(null, "Numéro du vol :", "RETRAIT D'UN VOL", JOptionPane.PLAIN_MESSAGE);
         int position = rechercherVol(Integer.parseInt(numeroVol));
         if (position == -1) {

@@ -169,6 +169,7 @@ public class GestionRadios {
                         String marque = JOptionPane.showInputDialog(null, 
                             "\nVous voulez lister toutes les radios\npour une marque en particulier.\n\nEntrez la marque :\n", 
                             "LISTE PAR MARQUE", JOptionPane.PLAIN_MESSAGE);
+                        if (marque == null) { break; }
                         listerRadiosParMarque(marque);
                         break;
                     }
