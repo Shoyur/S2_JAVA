@@ -16,8 +16,6 @@ public class GestionVols {
     static ArrayList<Vol> tabVols = new ArrayList<Vol>();
     static BufferedReader tempVols;
 
-    static boolean boucleMain = true;
-
     public static void chargerVols() throws Exception {
         try {
             String ligne;
@@ -31,7 +29,7 @@ public class GestionVols {
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "\nUne erreur est survenu lors du chargement des vols...\n\nCe programme va s'arrêter.\n\n", "ERREUR", JOptionPane.PLAIN_MESSAGE);
-            boucleMain = false;
+            System.exit(0);
         }
         tempVols.close();
     }
@@ -49,12 +47,12 @@ public class GestionVols {
 
     public static void listeVols() {
         JTextArea message = new JTextArea();
-        message.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
-        message.append("\n\t\t\tLISTE DES VOLS\n\nNo. de vol\tDestination\t\tDate de départ\tRéservations\n\n");
+        message.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        message.append("\n\t\t\tLISTE DES VOLS\n\n  No. de vol\tDestination\t\tDate de départ\tRéservations  \n\n");
         for (Vol vol : tabVols) {
-            message.append(vol.getNumeroVol() + "\t\t" + vol.getDestination() + "\t" + vol.getDate() + "\t" + vol.getNbReservations() + "\n");
+            message.append("  " + vol.getNumeroVol() + "\t\t" + vol.getDestination() + "\t" + vol.getDate() + "\t" + vol.getNbReservations() + "  \n");
         }
-        message.append("\n\n Nombre total de vols = " + tabVols.size() + ".\n\n");
+        message.append("\n\n  Nombre total de vols = " + tabVols.size() + ".\n\n");
         JOptionPane.showMessageDialog(null, message, NOM_DE_CIE, JOptionPane.PLAIN_MESSAGE);
     }
 
@@ -131,30 +129,27 @@ public class GestionVols {
 
     public static void retirerVol() throws Exception {
         JFrame frame = new JFrame();
-        
-
-        String numeroVol = JOptionPane.showInputDialog(null, "Numéro du vol :", "RETRAIT D'UN VOL", JOptionPane.PLAIN_MESSAGE);
-        int position = rechercherVol(Integer.parseInt(numeroVol));
-        if (position == -1) {
-            String message = "Ce numéro de vol n'existe pas!";
-            JOptionPane.showMessageDialog(null, message, "ERREUR", JOptionPane.PLAIN_MESSAGE);
-        }
+        String titre = "RETRAIT D'UN VOL";
+        String message = "Choisissez le numéro du vol :";
+        String [] options_vol = new String [tabVols.size()];
+        for (int i = 0; i < tabVols.size(); i++) { options_vol[i] = String.valueOf(tabVols.get(i).getNumeroVol()); }
+        String numeroVol = (String)JOptionPane.showInputDialog(frame, message, titre, JOptionPane.PLAIN_MESSAGE, null, options_vol, options_vol[0]);
+        if (numeroVol == null) { return; }
         else {
-            JTextArea message = new JTextArea();
-            message.append("Numéro de vol : \t" + numeroVol + "\n");
-            message.append("Destination : \t" + tabVols.get(position).getDestination() + "\n");
-            message.append("Date : \t" + tabVols.get(position).getDate() + "\n");
-            message.append("Nb. de réservations : \t" + tabVols.get(position).getNbReservations() + "\n\n");
-            message.append("Êtes vous certain de vouloir retirer ce vol ?\n");            
+            JTextArea message2 = new JTextArea();
+            int position = rechercherVol(Integer.parseInt(numeroVol));
+            message2.append("\nNuméro de vol : \t" + numeroVol + "\n");
+            message2.append("Destination : \t\t" + tabVols.get(position).getDestination() + "\n");
+            message2.append("Date : \t\t" + tabVols.get(position).getDate() + "\n");
+            message2.append("Nb. de réservations : \t" + tabVols.get(position).getNbReservations() + "\n\n");
+            message2.append("Êtes vous certain de vouloir retirer ce vol ?\n");            
             Object[] options = { "Oui", "Non" };
             // J'ai compris toutes les options de JOptionPane.showOptionDialog
             // sur https://docs.oracle.com/javase/7/docs/api/javax/swing/JOptionPane.html
-            int choix = JOptionPane.showOptionDialog(null, message, "CONFIRMER", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, null);
+            int choix = JOptionPane.showOptionDialog(null, message2, "CONFIRMER", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, null);
             // J'ai compris que le 1er bouton est 0, et les autres..1.2.. Et peser X retourne -1
             // sur https://hajsoftutorial.com/showoptiondialog-returns/
-            if (choix == 0) {
-                tabVols.remove(position);             
-            }
+            if (choix == 0) { tabVols.remove(position); }
         }
     }
 		
@@ -237,25 +232,25 @@ public class GestionVols {
         if (jour == null || Integer.parseInt(jour) == -1) { return; }
 
         tabVols.get(position).getDate().setAn(Integer.parseInt(an)); 
-        tabVols.get(position).getDate().setJour(Integer.parseInt(jour)); 
+        tabVols.get(position).getDate().setMois(Integer.parseInt(mois)); 
         tabVols.get(position).getDate().setJour(Integer.parseInt(jour)); 
 
     }
 
     public static void reserverVol() {
-        String message = "Numéro du vol :";
-        String numeroVol = JOptionPane.showInputDialog(null, message, "RÉSERVATION D'UN VOL", JOptionPane.PLAIN_MESSAGE);
+        JFrame frame = new JFrame();
+        String titre = "RÉSERVATION D'UN VOL";
+        String message = "Choisissez le numéro du vol :";
+        String [] options_vol = new String [tabVols.size()];
+        for (int i = 0; i < tabVols.size(); i++) { options_vol[i] = String.valueOf(tabVols.get(i).getNumeroVol()); }
+        String numeroVol = (String)JOptionPane.showInputDialog(frame, message, titre, JOptionPane.PLAIN_MESSAGE, null, options_vol, options_vol[0]);
         if (numeroVol == null) { return; }
-        int position = rechercherVol(Integer.parseInt(numeroVol));
-        if (position == -1) {
-            message = "Ce numéro de vol n'existe pas!";
-            JOptionPane.showMessageDialog(null, message, "RÉSERVATION D'UN VOL", JOptionPane.PLAIN_MESSAGE);
-        }
         else {
+            int position = rechercherVol(Integer.parseInt(numeroVol));
             int places = MAX_PLACES - tabVols.get(position).getNbReservations();
             if (places == 0) {
                 message = "\nDésolé, il ne reste plus de place pour ce vol.\n";
-                JOptionPane.showMessageDialog(null, message, "RÉSERVATION D'UN VOL", JOptionPane.PLAIN_MESSAGE);
+                JOptionPane.showMessageDialog(null, message, titre, JOptionPane.PLAIN_MESSAGE);
             }
             else {
                 message = "No. de vol : " + numeroVol + "\n";
@@ -263,7 +258,6 @@ public class GestionVols {
                 message += "Date de départ : " + tabVols.get(position).getDate() + "\n\n";
                 message += "Places restantes : " + places + "\n\n";
                 message += "Combien de places voulez-vous réserver ? : \n\n";
-                JFrame frame = new JFrame();
                 String [] options = new String [places];
                 for (int i = 1; i <= places; i++) {
                     options[i-1] = String.valueOf(i);
@@ -287,6 +281,7 @@ public class GestionVols {
             tempVols.close();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Une erreur est survenu lors de la sauvegarde des vols...", "ERREUR", JOptionPane.PLAIN_MESSAGE);
+            System.exit(0);
         }
         tempVols.close();
     }
@@ -302,11 +297,11 @@ public class GestionVols {
         messageMenuPrincipal.append("  (5) Réservation d'un vol.\n");
         messageMenuPrincipal.append("  (0) Sauvegarder + Quitter ce programme.                 \n");
         messageMenuPrincipal.append("\n\tFaites votre choix :");
-        while (boucleMain == true) {
+        while (true) {
             String choix = JOptionPane.showInputDialog(null, messageMenuPrincipal, NOM_DE_CIE, JOptionPane.PLAIN_MESSAGE);
             if (choix == null) {
                 JOptionPane.showMessageDialog(null, "\nAu revoir!\n\n", "FIN", JOptionPane.PLAIN_MESSAGE);
-                boucleMain = false;
+                System.exit(0);
             }
             else {
                 switch (choix) {
@@ -337,7 +332,7 @@ public class GestionVols {
                     case "0": {
                         ecrireFichier();
                         JOptionPane.showMessageDialog(null, "\nLe fichier a été mis à jour.\n\nAu revoir!\n\n", "FIN", JOptionPane.PLAIN_MESSAGE);
-                        boucleMain = false;
+                        System.exit(0);
                     }
                 }
             }
