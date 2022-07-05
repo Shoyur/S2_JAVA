@@ -3,12 +3,14 @@ import java.io.*;
 import java.util.ArrayList;
 import javax.swing.*;
 
-public class GestionLivres {
-	static final String FICHIER_LIVRES = "src/donnees/livres.txt";
+public class GestionLivres implements Serializable {
+	static final String FICHIER_LIVRES_OBJ = "src/donnees/livres.obj";
 	static ArrayList<Livre> biblio; 
-	static BufferedReader tmpLivresRead;
-	static BufferedWriter tmpLivresWrite; 
+
+	static ObjectInputStream tmpLivresReadObj;
+	static ObjectOutputStream tmpLivresWriteObj;
 	static JTextArea sortie;
+	static String ligne="";
 
 	public static int menuGeneral(){
 		String contenu="1-Lister\n2-Ajouter un livre\n3-Enlever un livre\n4-Lister par catégorie\n5-Modifier un livre\n6-Terminer\n\n";
@@ -23,29 +25,13 @@ public class GestionLivres {
 				.parseInt(JOptionPane.showInputDialog(null, contenu, "MENU GESTION LIVRES", JOptionPane.PLAIN_MESSAGE));
 	}
 
-	public static void chargerLivres() throws Exception {
+	public static void chargerLivresObj() throws Exception {
 		try {
-			String ligne;
-			String elems[] = new String[4];
-			biblio = new ArrayList<Livre>();
-			tmpLivresRead = new BufferedReader(new FileReader(FICHIER_LIVRES));
-			ligne = tmpLivresRead.readLine();//Lire la premiére ligne du fichier
-			while (ligne != null) {//Si ligne == null alors ont a atteint la fin du fichier
-				elems = ligne.split(";");//elems[0] contient le num�ro du livre;elems[1] le titre et elems[2] les pages
-				biblio.add(new Livre(Integer.parseInt(elems[0]), elems[1], Integer.parseInt(elems[2]), Integer.parseInt(elems[3])));
-				ligne = tmpLivresRead.readLine();
-			}//fin while
-			
-		} catch (FileNotFoundException e) {
-			System.out.println("Fichier introuvable. Vérifiez le chemin et nom du fichier.");
-		}
-		catch (IOException e) {
-			System.out.println("Un probléme est arrivé lors de la manipulation du fichier. V�rifiez vos donn�es.");
-		}catch (Exception e) { 
-			System.out.println("Un probléme est arrivé lors du chargement du fichier. Contactez l'administrateur.");
-		}finally {//Exécuté si erreur ou pas
-			tmpLivresRead.close();
-		}
+			tmpLivresReadObj = new ObjectInputStream(new FileInputStream(FICHIER_LIVRES_OBJ));
+			biblio = (ArrayList<Livre>)tmpLivresReadObj.readObject();
+
+		} catch (Exception e) { System.out.println("Une erreur est survenue..."); }
+		finally { tmpLivresReadObj.close(); }
 	}
 	
 	public static void afficherEntete(){
@@ -160,27 +146,17 @@ public class GestionLivres {
 		} while(choix != 4);
 	}
 	
-	static String ligne="";
-	public static void sauvegarderLivres() throws IOException{
+	public static void sauvegarderLivres() throws Exception {
+		tmpLivresWriteObj = new ObjectOutputStream(new FileOutputStream(FICHIER_LIVRES_OBJ));
+		tmpLivresWriteObj.writeObject(biblio);
+		tmpLivresWriteObj.close();
 		
-		// Utiliser ceci pour ajouter des données à la fin du fichier
-		// (FICHIER_LIVRES, true)
-		tmpLivresWrite = new BufferedWriter(new FileWriter(FICHIER_LIVRES));
-		biblio.forEach((unLivre) -> {
-			ligne=unLivre.getNum()+";"+unLivre.getTitre()+";"+unLivre.getPages()+";"+unLivre.getCategorie();
-			try {
-				tmpLivresWrite.write(ligne);
-				tmpLivresWrite.newLine();
-			} catch (IOException e) {
-				System.out.println("Problème d'écriture dans le fichier");
-			}
-		});
-		tmpLivresWrite.close();
+		// Besoin d'ajouter try-catch !!!
 	}
 
 	public static void main(String[] args) throws Exception {
 		int choix;
-		chargerLivres();
+		chargerLivresObj();
 		do {
 			choix = menuGeneral();
 			switch(choix){

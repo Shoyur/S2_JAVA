@@ -1,4 +1,6 @@
-public class Livre {
+import java.io.*;
+
+public class Livre implements Serializable {
 	
 	String tabCategs[] = {"Horreur","Drame","Comédie","Jeunesse","Poésie","Biographie","Cuisine"};
 	
@@ -76,11 +78,8 @@ public class Livre {
 
 	public boolean equals(Object obj) {
 		Livre autreLivre = (Livre) obj;
-		if (this.num == autreLivre.num) {
-			return true;
-		} else {
-			return false;
-		}
+		if (this.num == autreLivre.num) { return true; } 
+		else { return false; }
 	}
 	
 	//Retourner le contenu d'un objet selon un format voulu
