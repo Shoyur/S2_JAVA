@@ -1,5 +1,8 @@
-public class Livre {
-	
+import java.io.*;
+public class Livre implements Serializable, Comparable<Livre>{
+
+	private static final long serialVersionUID = 2040890116313738088L;
+
 	String tabCategs[] = {"Horreur","Drame","Comédie","Jeunesse","Poésie","Biographie","Cuisine"};
 	
 	//Attributs d'instances
@@ -82,9 +85,17 @@ public class Livre {
 			return false;
 		}
 	}
+	public int compareTo(Livre unLivre){
+		//Par num livre
+		//return (int) (this.num - unLivre.num);//En ordre croissant
+		//return (int) (unLivre.num - this.num);//En ordre décroissant
+		//Par titre
+		return this.titre.compareTo(unLivre.titre);
+	}
 	
 	//Retourner le contenu d'un objet selon un format voulu
 	public String toString() {
 		return (this.titre.length() > 17) ? this.num+"\t"+this.titre+"\t"+this.pages+"\t"+getCategorieString()+"\n" : this.num+"\t"+this.titre+"\t\t"+this.pages+"\t"+getCategorieString()+"\n";
 	}
 }
+

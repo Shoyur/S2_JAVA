@@ -1,0 +1,7 @@
+200;Un excellent livre;850;5
+888;UN LIVRE;300;0
+400;Langage Java;600;4
+500;HTML 5 pour les nulls;100;3
+100;Titanic;500;1
+999;Un autre bon livre;340;5
+300;Pinoccio;100;5
